@@ -1,0 +1,16 @@
+[
+{
+  "modid": "hypeguild",
+  "name": "HypeGuild",
+  "description": "Example placeholder mod.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["aidn5"],
+  "credits": "ME! who else? ME! :)",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
