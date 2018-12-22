@@ -23,7 +23,8 @@ public class IgnUuidResolver {
 	private List<User> users;
 	private final File cacheFile;
 
-	public static long cacheTime = 60 * 60 * 24 * 3;// save username for 3 days
+	// TODO: add option in settings to change the cache time
+	private static long cacheTime = 60 * 60 * 24 * 3;// save username for 3 days
 
 	public IgnUuidResolver(File cacheFile) {
 		this.cacheFile = cacheFile;
@@ -66,6 +67,7 @@ public class IgnUuidResolver {
 
 	public void load() {
 		try {
+			// TODO: Add on file exists. Exceptions is thrown on the very first run
 			FileInputStream fis = new FileInputStream(this.cacheFile);
 
 			byte[] data = new byte[(int) this.cacheFile.length()];

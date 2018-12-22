@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.aidn5.hypeguild.HypeGuild;
 import com.aidn5.hypeguild.ModConfig;
+import com.aidn5.hypeguild.util.MCUtil;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -53,7 +53,7 @@ public class Command extends CommandBase {
 				listAll.forceRefresh = true;
 			}
 
-			listAll.run();
+			new Thread(listAll).start();
 			return;
 
 		} else if (args[0].equals("byguildexp")) {
@@ -63,7 +63,7 @@ public class Command extends CommandBase {
 				byGuildExp.forceRefresh = true;
 			}
 
-			byGuildExp.run();
+			new Thread(byGuildExp).start();
 
 			return;
 
@@ -74,7 +74,7 @@ public class Command extends CommandBase {
 			return;
 
 		} else if (args[0].equals("setapikey")) {
-			if (args.length == 1) Minecraft.getMinecraft().thePlayer.sendChatMessage("/api");
+			if (args.length == 1) MCUtil.sendChatMessage("/api");
 
 			else if (args[1].length() != 36) {
 				sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Invaild api"));

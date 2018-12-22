@@ -7,20 +7,21 @@ import com.aidn5.hypeguild.HypeGuild;
 import com.aidn5.hypeguild.fetcher.Fetcher;
 import com.aidn5.hypeguild.gui.ListViewer;
 import com.aidn5.hypeguild.models.GuildMember;
+import com.aidn5.hypeguild.util.MCUtil;
 
 import net.minecraft.util.EnumChatFormatting;
 
-public class ListAll extends Fetcher implements Runnable {
-	public boolean forceRefresh = false;
+class ListAll extends Fetcher implements Runnable {
+	boolean forceRefresh = false;
 
 	@Override
 	public void run() {
-		showMessage("Listing all the members...", "Hi :)");
+		MCUtil.showMessage("Listing all the members...", "Hi :)");
 
 		List<GuildMember> guildMembers = getGuildMembers(this.forceRefresh);
 		if (guildMembers == null) return; // Message has already been shown in getGuildMembers()
 
-		sortMembers(guildMembers);
+		guildMembers.sort(null);
 
 		List<String> list = new ArrayList<String>();
 

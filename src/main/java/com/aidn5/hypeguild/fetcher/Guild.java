@@ -18,7 +18,7 @@ import com.google.gson.JsonParser;
  * @author aidn5
  *
  */
-public class Guild {
+class Guild {
 	/**
 	 * @param uuid
 	 *            a member of the guild
@@ -31,13 +31,13 @@ public class Guild {
 	 * @throws MalformedURLException
 	 *             (This should never happen).
 	 */
-	public static String findGuildIdByMemberUuid(String uuid, String apiKey) throws MalformedURLException, IOException {
+	static String findGuildIdByMemberUuid(String uuid, String apiKey) throws MalformedURLException, IOException {
 
 		String url = "https://api.hypixel.net/findGuild?key=" + apiKey + "&byUuid=" + uuid;
 		String response = Util.requestData(url);
 
 		JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
-		if (jsonObject.get("guild").isJsonNull()) return null;
+		if (jsonObject.get("guild") == null || jsonObject.get("guild").isJsonNull()) return null;
 
 		return jsonObject.get("guild").getAsString();
 	}
@@ -58,7 +58,7 @@ public class Guild {
 	 * @throws MalformedURLException
 	 *             (This should never happen).
 	 */
-	public static String getGuildStringById(String id, String apiKey) throws MalformedURLException, IOException {
+	static String getGuildStringById(String id, String apiKey) throws MalformedURLException, IOException {
 
 		String url = "https://api.hypixel.net/guild?key=" + apiKey + "&id=" + id;
 		String response = Util.requestData(url);
@@ -77,7 +77,7 @@ public class Guild {
 	 * @throws JsonParseException
 	 *             if the specified text is not valid JSON
 	 */
-	public static List<GuildMember> getGuildMemebersFromString(String json) throws JsonParseException {
+	static List<GuildMember> getGuildMemebersFromString(String json) throws JsonParseException {
 		JsonObject jsonGuild = new JsonParser().parse(json).getAsJsonObject().get("guild").getAsJsonObject();
 		JsonArray jsonMembers = jsonGuild.get("members").getAsJsonArray();
 

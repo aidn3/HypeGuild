@@ -16,12 +16,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * @author aidn5
  *
  */
-public class ChatApiDetector {
-	private Pattern apiKeyPattern = Pattern.compile("^Your new API key is ([A-Za-z0-9\\-]{36})");
+class ChatApiDetector {
+	private static final Pattern apiKeyPattern = Pattern.compile("^Your new API key is ([A-Za-z0-9\\-]{36})");
 
 	private final Settings settings;
 
-	public ChatApiDetector(Settings settings) {
+	ChatApiDetector(Settings settings) {
 		this.settings = settings;
 	}
 

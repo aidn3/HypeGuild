@@ -1,58 +1,102 @@
 package com.aidn5.hypeguild.commands;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import com.aidn5.hypeguild.HypeGuild;
-import com.aidn5.hypeguild.fetcher.MembersDetails;
-import com.aidn5.hypeguild.fetcher.MembersDetails.Response;
+import com.aidn5.hypeguild.fetcher.MembersCoins;
 import com.aidn5.hypeguild.gui.ListViewer;
+import com.aidn5.hypeguild.gui.ProgressViewer;
 import com.aidn5.hypeguild.models.GuildMember;
+import com.aidn5.hypeguild.util.MCUtil;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 
-public class ByGuildExp implements Runnable {
+class ByGuildExp extends MembersCoins implements Runnable {
+
 	public boolean forceRefresh = false;
+
+	private ProgressViewer progressViewer;
 
 	@Override
 	public void run() {
-		MembersDetails membersDetails = new MembersDetails();
-		membersDetails.forceRefresh = this.forceRefresh;
+		// TODO: Add "!" in the production! To run it on hypixel network
+		if (HypeGuild.instance.onHypixel) {
+			onCancel("Are you sure you are on hypixel network?", "tip: connect to mc.hypixel.net ;)");
+			return;
+		}
 
-		membersDetails.response = new Response() {
+		this.progressViewer = new ProgressViewer();
+		this.progressViewer.onCancel = new Runnable() {
 			@Override
-			public void onFinished(List<GuildMember> guildMembers) {
-				doAfterGetMembers(guildMembers);
+			public void run() {
+				cancel();
+				MCUtil.showMessage(EnumChatFormatting.RED + "Gui has been cancelled D:", "Next time: Do not move ;)");
 			}
 		};
 
-		membersDetails.run();
+		MCUtil.showMessage("Listing all the members...", "Hi :)");
+
+		HypeGuild.instance.guiToDisplay = this.progressViewer;
+
+		getMembersCoins(this.forceRefresh);
 	}
 
-	private void doAfterGetMembers(List<GuildMember> guildMembers) {
-		TreeMap<String, Integer> members = new TreeMap<String, Integer>();
+	@Override
+	protected void onFinish(List<GuildMember> guildMembers) {
+		this.progressViewer.onCancel = null;
+
+		guildMembers.sort(new Comparator<GuildMember>() {
+			@Override
+			public int compare(GuildMember o1, GuildMember o2) {
+				if (o1.getWeeklyGuildExp() > o2.getWeeklyGuildExp()) return -1;
+				else if (o1.getWeeklyGuildExp() < o2.getWeeklyGuildExp()) return 1;
+				return o1.compareTo(o2);
+			}
+		});
 
 		List<String> list = new ArrayList<String>();
 
-		for (GuildMember guildMember : guildMembers) {
-			String username = guildMember.username;
-			Integer totalExp = 0;
+		int count = 1;
+		String ownerUuid = Minecraft.getMinecraft().getSession().getPlayerID();
+		String ownerName = Minecraft.getMinecraft().getSession().getUsername();
 
-			for (Integer value : guildMember.coins.values()) {
-				totalExp += value;
+		for (GuildMember guildMember : guildMembers) {
+			String name = (guildMember.username != null) ? guildMember.username : guildMember.uuid;
+			String color;
+
+			if (guildMember.rank.equals("guildmaster")) {
+				color = EnumChatFormatting.BOLD + "" + EnumChatFormatting.RED + "";
+
+			} else if (guildMember.username.equals(ownerName) || guildMember.uuid.contains(ownerUuid)) {
+				color = EnumChatFormatting.BOLD + "" + EnumChatFormatting.AQUA + "";
+
+			} else {
+				color = EnumChatFormatting.WHITE + "";
 			}
 
-			members.put(username, totalExp);
-		}
-
-		for (Entry<String, Integer> member : members.entrySet()) {
-			String exp = EnumChatFormatting.BOLD + "" + EnumChatFormatting.GOLD + member.getValue();
-			String memberName = EnumChatFormatting.WHITE + member.getKey();
-			list.add(exp + "" + EnumChatFormatting.RESET + memberName);
+			String exp = EnumChatFormatting.BOLD + "" + EnumChatFormatting.GOLD + guildMember.getWeeklyGuildExp();
+			String memberName = color + name;
+			String countNr = EnumChatFormatting.WHITE + "" + count + ". ";
+			list.add(countNr + "" + exp + " " + EnumChatFormatting.RESET + memberName);
+			count++;
 		}
 
 		HypeGuild.instance.guiToDisplay = new ListViewer(list);
+	}
+
+	@Override
+	protected void onUpdate(int total, int currentProgress) {
+		progressViewer.total = total;
+		progressViewer.currentProgress = currentProgress;
+	}
+
+	@Override
+	protected void onCancel(String reason, String toolTip) {
+		if (reason != null && !reason.isEmpty()) {
+			MCUtil.showMessage(reason, toolTip);
+		}
 	}
 }

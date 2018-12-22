@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class CacheController {
-	public long saveCacheFor = 60 * 60 * 6; // 6 hours
+	private static final long saveCacheFor = 60 * 60 * 6; // 6 hours
 
 	private final String cacheFolder;
 

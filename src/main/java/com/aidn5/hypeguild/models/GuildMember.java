@@ -8,7 +8,8 @@ import java.util.HashMap;
  * @author aidn5
  *
  */
-public class GuildMember {
+public class GuildMember implements Comparable<GuildMember> {
+
 	public String username = null;
 	public String uuid = null;
 
@@ -21,9 +22,10 @@ public class GuildMember {
 	public String tagColor = "DARK_AQUA";
 
 	public int lastTimeOnline = -1;
-	public double hypixelLevel = -1;
+	private double hypixelLevel = -1;
 
 	public HashMap<Integer, Integer> coins = null;
+	private int totalGuildExp = -1;
 
 	/**
 	 * This method returns the level of a player calculated by the current
@@ -45,6 +47,30 @@ public class GuildMember {
 		return Math.floor(1 + REVERSE_PQ_PREFIX + Math.sqrt(REVERSE_CONST + GROWTH_DIVIDES_2 * this.hypixelLevel));
 	}
 
+	public int getWeeklyGuildExp() {
+		if (this.totalGuildExp > 0) return this.totalGuildExp;
+
+		for (Integer value : this.coins.values()) {
+			this.totalGuildExp += value;
+		}
+
+		return this.totalGuildExp;
+	}
+
+	@Override
+	public int compareTo(GuildMember o2) {
+		// First in rank priority
+		if (this.rankProirity > o2.rankProirity) return -1;
+		else if (this.rankProirity < o2.rankProirity) return 1;
+
+		// If the same... who tag has
+		if (!this.tag.isEmpty() && o2.tag.isEmpty()) return -1;
+		else if (this.tag.isEmpty() && !o2.tag.isEmpty()) return 1;
+
+		// See in name?!
+		return this.rank.toLowerCase().compareTo(o2.rank.toLowerCase());
+	}
+
 	@Override
 	public GuildMember clone() {
 		GuildMember guildMember = new GuildMember();
@@ -62,6 +88,8 @@ public class GuildMember {
 
 		guildMember.lastTimeOnline = this.lastTimeOnline;
 		guildMember.hypixelLevel = this.hypixelLevel;
+
+		guildMember.coins = (HashMap<Integer, Integer>) this.coins.clone();
 
 		return guildMember;
 	}

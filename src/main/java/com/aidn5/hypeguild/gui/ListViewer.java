@@ -32,7 +32,7 @@ public class ListViewer extends GuiScreen {
 
 			@Override
 			protected void drawSlot(int i, int width, int height, int var4, Tessellator tess) {
-				drawCenteredString(fontRendererObj, listString.get(i), width / 2, height, White);
+				drawString(fontRendererObj, listString.get(i), width / 3, height, White);
 			}
 
 			@Override
